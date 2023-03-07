@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  title('Zignuts Technolab'),
+                  title('Zignuts'),
                   SizedBox(
                     height: 30.h,
                   ),
