@@ -1,8 +1,5 @@
-import 'package:assignment3/resources/color_manager.dart';
-import 'package:assignment3/screens/login_screen.dart';
-import 'package:assignment3/screens/shoppinglistscreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+
+import '../resources/screen_barrel.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String id = "splashscreen";
@@ -28,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (cureentUser == null  ) {
       Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id,(route) => false,);
     } else {
-      Navigator.pushNamedAndRemoveUntil(context, ShoppingList.id,(route) => false,);
+      Navigator.pushNamedAndRemoveUntil(context, TransactionScreen.id,(route) => false,);
     }
   }
 

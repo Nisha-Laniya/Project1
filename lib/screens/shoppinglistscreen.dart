@@ -1,13 +1,5 @@
-import 'dart:async';
-import 'package:assignment3/resources/color_manager.dart';
-import 'package:assignment3/screens/controller.dart';
-import 'package:assignment3/widgets/reusable_widgets.dart';
-import 'package:assignment3/screens/login_screen.dart';
-import 'package:assignment3/screens/product_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../resources/screen_barrel.dart';
 
 class ShoppingList extends StatefulWidget {
   static const id = 'shoppinglists';
@@ -21,18 +13,15 @@ class ShoppingList extends StatefulWidget {
 class _ShoppingListState extends State<ShoppingList> {
   String textTitle = 'home';
   String textType = 'private';
-  int quantity = 0;
-  int price = 0;
   final ListController _listController = ListController();
   TextEditingController wishlistTitleController = TextEditingController();
   TextEditingController wishlistTypeController = TextEditingController();
   TextEditingController wishlistPriceController = TextEditingController();
   TextEditingController wishlistQuantityController = TextEditingController();
 
-
   Stream<QuerySnapshot>? _stream; // stram variable
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance; // firebase auth instance
-  User? get cureentUser => _firebaseAuth.currentUser;  //Current user
+  User? get cureentUser => _firebaseAuth.currentUser; //Current user
 
   @override
   void initState() {
@@ -40,12 +29,11 @@ class _ShoppingListState extends State<ShoppingList> {
     _stream = _listController.getWishList();
   }
 
- //it's use for cleartextfield
+  //it's use for cleartextfield
   void clearText() {
     wishlistTitleController.clear();
     wishlistTypeController.clear();
   }
-
 
 //Current user Name
   Widget _personName() {
@@ -57,7 +45,6 @@ class _ShoppingListState extends State<ShoppingList> {
       ),
     );
   }
-
 
 //Current user email
   Widget _personEmail() {
@@ -92,7 +79,8 @@ class _ShoppingListState extends State<ShoppingList> {
                         itemBuilder: (BuildContext context, int index) {
                           DocumentSnapshot getListValue = snapshot.data!.docs[index];
                           final uId = getListValue["user_id"];
-                          final wishId=getListValue['id'];
+                          final wishId = getListValue['id'];
+
                           return GestureDetector(
                             onTap: () {
                               Route route = MaterialPageRoute(
@@ -156,49 +144,11 @@ class _ShoppingListState extends State<ShoppingList> {
                                                       color: Colors.grey,
                                                       fontSize: 10.sp),
                                                 ),
-                                                StreamBuilder<Map<String, int>>(
-                                                  stream: _listController.getTotalQuantityPrice(wishlistId: getListValue['id']),
-                                                    builder:(BuildContext context, AsyncSnapshot<Map<String, int>> snapshot) {
-                                                      if (snapshot.hasError) {
-                                                        return Text('Error: ${snapshot.error}');
-                                                      }
 
-                                                      if (!snapshot.hasData) {
-                                                        return const Text('Loading...');
-                                                      }
-                                                    final data = snapshot.data!;
-                                                    return Text(
-                                                      '${data['quantity']}',
-                                                      style: TextStyle(
-                                                        fontSize: 10.sp,
-                                                      ),
-                                                    );
-                                                  }
-                                                ),
+                                                ProductQuantityPriceStreambuilder(stream: _listController.getTotalQuantityPrice(wishlistId: getListValue['id']), quantityOrPrice: 'quantity'),
                                               ],
                                             ),
-                                            StreamBuilder(
-                                                stream: _listController.getTotalQuantityPrice(wishlistId: getListValue['id']),
-                                                builder:(BuildContext context, snapshot) {
-                                                  if (snapshot.hasError) {
-                                                    return Text('Error: ${snapshot.error}');
-                                                  }
-
-                                                  if (!snapshot.hasData) {
-                                                    return const Text('Loading...');
-                                                  }
-                                                  final data = snapshot.data;
-                                                  print("All Data:$data");
-                                                  return Text(
-                                                    '₹${data!['price']}',
-                                                    style: TextStyle(
-                                                      color: Colors.green[900],
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 12.sp,
-                                                    ),
-                                                  );
-                                                }
-                                            ),
+                                            ProductQuantityPriceStreambuilder(stream: _listController.getTotalQuantityPrice(wishlistId: getListValue['id']), quantityOrPrice: 'price'),
 
                                           ],
                                         ),
@@ -213,8 +163,7 @@ class _ShoppingListState extends State<ShoppingList> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 10)
-                            .r,
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 10).r,
                     child: GestureDetector(
                       onTap: () {
                         wishList();
@@ -312,7 +261,7 @@ class _ShoppingListState extends State<ShoppingList> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(30).w,
-                  child: title('Add item'),
+                  child: TitleTextWidget(titleText:'Add item'),
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
@@ -328,8 +277,7 @@ class _ShoppingListState extends State<ShoppingList> {
                     fillColor: ColorManager.white.withOpacity(0.3),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25).w,
-                        borderSide:
-                            BorderSide(width: 0.w, style: BorderStyle.none)),
+                        borderSide: BorderSide(width: 0.w, style: BorderStyle.none)),
                   ),
                   onChanged: (value) {
                     textTitle = value;
@@ -363,17 +311,20 @@ class _ShoppingListState extends State<ShoppingList> {
                   height: 10.h,
                 ),
                 const Spacer(),
-                reusableButton(context, 'Submit', () async {
-                  _listController.addWishlistItem(
-                      title: textTitle, priority: textType);
-                  clearText();
-                  Navigator.of(context).pop();
-
-                }),
+                FormSubmitButton(
+                  buttonText: 'Submit',
+                  onSubmitForm: () => _addNewWishlistButton(),
+                ),
               ],
             ),
           );
         });
+  }
+
+  _addNewWishlistButton() {
+    _listController.addWishlistItem(title: textTitle, priority: textType);
+    clearText();
+    Navigator.of(context).pop();
   }
 
   FutureOr onGoBack(dynamic value) {

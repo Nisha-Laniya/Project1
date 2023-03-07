@@ -1,25 +1,19 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../resources/color_manager.dart';
-import '../resources/style_manager.dart';
-import 'controller.dart';
+import '../resources/screen_barrel.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   static const id = "productdetailscreen";
   final String? uid;
   final String? wishId;
 
-  const ProductDetailScreen({Key? key, this.uid,this.wishId}) : super(key: key);
+  const ProductDetailScreen({Key? key, this.uid, this.wishId}) : super(key: key);
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  final DatabaseReference dbRef = FirebaseDatabase.instance.ref('product');  //realtime database reference
- final  ListController _listController = ListController();  //Controller Reference
+  final DatabaseReference dbRef = FirebaseDatabase.instance.ref('product'); //realtime database reference
+  final ListController _listController = ListController(); //Controller Reference
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,8 +39,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           image: DecorationImage(
                               image: NetworkImage(snapshot.child('image').value.toString()),
                               fit: BoxFit.cover),
-                          borderRadius:
-                              BorderRadius.all(const Radius.circular(4).w)),
+                          borderRadius:BorderRadius.all(const Radius.circular(4).w)),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,8 +54,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             padding: const EdgeInsets.all(3).w,
                             child: Text(
                               "10% Discount",
-                              style: getStyle(
-                                  10.sp, FontWeight.bold, ColorManager.white),
+                              style: getStyle(10.sp, FontWeight.bold, ColorManager.white),
                             ),
                           ),
                           Row(
@@ -132,22 +124,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     IconButton(
                                       onPressed: () {
                                         setState(() {
-                                          _listController
-                                              .increaseDecreaseProductQuantity(
-                                                  productId: snapshot
-                                                      .child('pid')
-                                                      .value
-                                                      .toString(),
-                                                  wishlistId:
-                                                      widget.wishId.toString(),
-                                                  price: snapshot.child('prize').value as int,
-                                                  isIncrease: false,
-                                                  onError: (error) {
-                                                    print(error);
-                                                  },
-                                                  onSuccess: (quantity) {
-                                                    print('Decrement Quantity:$quantity');
-                                                  });
+                                       _increaseDecreaseProductQuantity(snapshot, false);
                                         });
                                       },
                                       icon: Icon(
@@ -161,12 +138,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     Padding(
                                       padding: const EdgeInsets.all(10.0),
                                       child: StreamBuilder(
-                                        stream: _listController.getProductQuantity(productId: snapshot.child('pid').value.toString() , wishlistId: widget.wishId.toString()),
+                                        stream: _listController.getProductQuantity(
+                                                productId: snapshot.child('pid').value.toString(), wishlistId: widget.wishId.toString()),
                                         builder: (context, snapshot) {
-                                          if (snapshot.hasError) {
-                                            return Text('Error: ${snapshot.error}');
-                                          }
-
                                           if (!snapshot.hasData) {
                                             return const Text('Loading...');
                                           }
@@ -175,28 +149,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         },
                                       ),
                                     ),
+
                                     //it's use for Increment the product quantity
                                     IconButton(
                                       onPressed: () {
                                         setState(() {
-                                          _listController
-                                              .increaseDecreaseProductQuantity(
-                                                  productId: snapshot
-                                                      .child('pid')
-                                                      .value
-                                                      .toString(),
-                                                  wishlistId:
-                                                      widget.wishId.toString(),
-                                                  price: snapshot
-                                                      .child('prize')
-                                                      .value as int,
-                                                  isIncrease: true,
-                                                  onError: (error) {
-                                                    print(error);
-                                                  },
-                                                  onSuccess: (quntity) {
-                                                    print( 'Incement quantity:$quntity');
-                                                  });
+                                          _increaseDecreaseProductQuantity(snapshot,true);
                                         });
                                       },
                                       icon: const Icon(
@@ -242,5 +200,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
       ),
     );
+  }
+
+//this function is used for increase or decrease product quantity
+  _increaseDecreaseProductQuantity(DataSnapshot snapshot,bool val){
+    _listController
+        .increaseDecreaseProductQuantity(
+        productId: snapshot
+            .child('pid')
+            .value
+            .toString(),
+        wishlistId:
+        widget.wishId.toString(),
+        price: snapshot
+            .child('prize')
+            .value as int,
+        isIncrease: val,
+        onError: (error) {
+          print(error);
+        },
+        onSuccess: (quntity) {
+          print(
+              'Incement quantity:$quntity');
+        });
   }
 }

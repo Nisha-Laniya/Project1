@@ -16,4 +16,5 @@ class ColorManager {
   static Color white2 = Colors.white70;
   static Color? fullDarkGreen = Colors.green[900];
   static Color? lemonGreen = Colors.green[50];
+  static Color? darkPink = Colors.pink[800];
 }

@@ -26,7 +26,7 @@ class ListController {
       if (onError != null) onError(e);
     }
   }
-//it's use for fetch data from wishlist
+//it's use for fetch data from wishlist collection
   Stream<QuerySnapshot<Map<String, dynamic>>> getWishList() => _firestore
       .collection('wishlist')
       .where('user_id', isEqualTo: _user?.uid)
@@ -57,7 +57,7 @@ class ListController {
         return result;
       });
 
-  //it's use for increment an decrement product quantity
+  //it's use for increment an decrement product quantity in product collection
 
   Future<void> increaseDecreaseProductQuantity({
     required String productId,
@@ -102,7 +102,7 @@ class ListController {
       if (onError != null) onError(e);
     }
   }
-//it's use for getting total quantity
+//it's use for getting total quantity from product collection
   Stream<int> getProductQuantity({
     required String productId,
     required String wishlistId,

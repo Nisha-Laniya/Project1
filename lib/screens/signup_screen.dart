@@ -1,11 +1,6 @@
-import 'package:assignment3/resources/color_manager.dart';
-import 'package:assignment3/screens/shoppinglistscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../widgets/reusable_widgets.dart';
 
+import '../resources/screen_barrel.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const id = 'signupscreen';
@@ -20,8 +15,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _passwordTextController = TextEditingController();
-  final TextEditingController _confirmPasswordTextController = TextEditingController();
-
+  final TextEditingController _confirmPasswordTextController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -46,7 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
             gradient: LinearGradient(
-                colors: [ColorManager.darkGreen,ColorManager.lightGreen],
+                colors: [ColorManager.darkGreen, ColorManager.lightGreen],
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft)),
         child: SingleChildScrollView(
@@ -56,48 +51,51 @@ class _SignUpScreenState extends State<SignUpScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  reusableTextField('Enter UserName', Icons.person_outline,
-                      false, _usernameTextController, "username",TextInputAction.next),
+                  UserDataTextFormField(
+                    controller: _usernameTextController,
+                    label: 'username',
+                    icon: Icons.email_outlined,
+                    isPasswordType: false,
+                    hintText: 'Enter UserName',
+                    textInputAction: TextInputAction.next,
+                  ),
                   SizedBox(
                     height: 15.h,
                   ),
-                  reusableTextField('Enter Email', Icons.email_outlined, false,
-                      _emailTextController, "email",TextInputAction.next),
+                  UserDataTextFormField(
+                    controller: _emailTextController,
+                    label: 'email',
+                    icon: Icons.email_outlined,
+                    isPasswordType: false,
+                    hintText: 'Enter Email',
+                    textInputAction: TextInputAction.next,
+                  ),
                   SizedBox(
                     height: 15.h,
                   ),
-                  reusableTextField('Enter Password', Icons.lock_outline, true,
-                      _passwordTextController, "password",TextInputAction.next),
+                  UserDataTextFormField(
+                    controller: _passwordTextController,
+                    label: 'password',
+                    icon: Icons.lock_outline,
+                    isPasswordType: true,
+                    hintText: 'Enter Password',
+                    textInputAction: TextInputAction.next,
+                  ),
                   SizedBox(
                     height: 15.h,
                   ),
-                  reusableTextField(
-                      'Enter Confirm Password',
-                      Icons.lock_outline,
-                      true,
-                      _confirmPasswordTextController,
-                      "confirm password",TextInputAction.done),
+                  UserDataTextFormField(
+                    controller: _confirmPasswordTextController,
+                    label: 'confirm password',
+                    icon: Icons.lock_outline,
+                    isPasswordType: true,
+                    hintText: 'Enter Confirm Password',
+                    textInputAction: TextInputAction.done,
+                  ),
                   SizedBox(
                     height: 15.h,
                   ),
-                  reusableButton(context, "SIGN UP", () {
-                    if (_formKey.currentState!.validate()){
-                      FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                              email: _emailTextController.text,
-                              password: _passwordTextController.text)
-                          .then((value) {
-                        print('Account created successfully');
-                        final auth = FirebaseAuth.instance.currentUser;
-                        auth!.updateDisplayName(_usernameTextController.text);
-                        FirebaseFirestore.instance.collection('Users').doc(value.user!.email).set({'Email': auth.email,'Uid':auth.uid});
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, ShoppingList.id, (route) => true);
-                      }).onError((error, stackTrace) {
-                        print("Error ${error.toString()}");
-                      });
-                    }
-                  }),
+                  FormSubmitButton(buttonText:  "SIGN UP",onSubmitForm: ()=>submitSignupForm()),
                 ],
               ),
             ),
@@ -105,5 +103,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
     );
+  }
+  submitSignupForm(){
+    {
+      if (_formKey.currentState!.validate()) {
+        FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+            email: _emailTextController.text,
+            password: _passwordTextController.text)
+            .then((value) {
+          print('Account created successfully');
+          final auth = FirebaseAuth.instance.currentUser;
+          auth!.updateDisplayName(_usernameTextController.text);
+          FirebaseFirestore.instance
+              .collection('Users')
+              .doc(value.user!.email)
+              .set({'Email': auth.email, 'Uid': auth.uid});
+          Navigator.pushNamedAndRemoveUntil(
+              context, ShoppingList.id, (route) => true);
+        }).onError((error, stackTrace) {
+          print("Error ${error.toString()}");
+        });
+      }
+    }
   }
 }

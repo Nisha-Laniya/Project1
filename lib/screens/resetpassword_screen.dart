@@ -1,11 +1,4 @@
-import 'package:assignment3/screens/login_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../resources/color_manager.dart';
-import '../widgets/reusable_widgets.dart';
-
+import '../resources/screen_barrel.dart';
 class ResetPasswordScreen extends StatefulWidget {
   static const id="resetpasswordscreen";
   const ResetPasswordScreen({Key? key}) : super(key: key);
@@ -50,23 +43,26 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    reusableTextField('Enter Email', Icons.email_outlined,
-                        false, _emailTextController, "email",TextInputAction.done),
+                    UserDataTextFormField(controller: _emailTextController,label: 'email',icon: Icons.email_outlined,isPasswordType:false,hintText: 'Enter Email',textInputAction: TextInputAction.done,),
                     SizedBox(
                       height: 15.h,
                     ),
-                    reusableButton(context, "Reset Password", () {
-                      if(_formKey.currentState!.validate()) {
-                        FirebaseAuth.instance.sendPasswordResetEmail(email: _emailTextController.text).then((value) {
-                          Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id, (route) => false);
-                        });
-                      }
-                    })
+                    FormSubmitButton( buttonText: 'Reset Password', onSubmitForm: ()=>_submitResetPasswordForm()),
                   ],
                 ),
               ),
             ),
           ),
         ));
+  }
+
+   _submitResetPasswordForm(){
+    {
+      if(_formKey.currentState!.validate()) {
+        FirebaseAuth.instance.sendPasswordResetEmail(email: _emailTextController.text).then((value) {
+          Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id, (route) => false);
+        });
+      }
+    }
   }
 }
