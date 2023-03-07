@@ -104,6 +104,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
           ))
         ],
       ),
+      drawer: NavigatorDrawer(),
     );
   }
 }

@@ -19,9 +19,7 @@ class _ShoppingListState extends State<ShoppingList> {
   TextEditingController wishlistPriceController = TextEditingController();
   TextEditingController wishlistQuantityController = TextEditingController();
 
-  Stream<QuerySnapshot>? _stream; // stram variable
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance; // firebase auth instance
-  User? get cureentUser => _firebaseAuth.currentUser; //Current user
+  Stream<QuerySnapshot>? _stream; // stream variable
 
   @override
   void initState() {
@@ -35,27 +33,6 @@ class _ShoppingListState extends State<ShoppingList> {
     wishlistTypeController.clear();
   }
 
-//Current user Name
-  Widget _personName() {
-    return Text(
-      cureentUser?.displayName ?? '',
-      style: TextStyle(
-        color: ColorManager.white,
-        fontSize: 10.sp,
-      ),
-    );
-  }
-
-//Current user email
-  Widget _personEmail() {
-    return Text(
-      cureentUser?.email ?? '',
-      style: TextStyle(
-        color: ColorManager.white,
-        fontSize: 18.sp,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,35 +195,7 @@ class _ShoppingListState extends State<ShoppingList> {
           },
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: _personName(),
-              accountEmail: _personEmail(),
-              decoration: BoxDecoration(
-                color: ColorManager.green,
-              ),
-              currentAccountPicture: const CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.account_circle_sharp,
-                  size: 50,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Log Out'),
-              onTap: () {
-                _firebaseAuth.signOut();
-                Navigator.pushNamed(context, LoginScreen.id);
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: NavigatorDrawer(),
     );
   }
 

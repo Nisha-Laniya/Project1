@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (cureentUser == null  ) {
       Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id,(route) => false,);
     } else {
-      Navigator.pushNamedAndRemoveUntil(context, TransactionScreen.id,(route) => false,);
+      Navigator.pushNamedAndRemoveUntil(context, ShoppingList.id,(route) => false,);
     }
   }
 
