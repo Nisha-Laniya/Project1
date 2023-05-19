@@ -30,7 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: EdgeInsets.only(
                     left: 20,
                     top: MediaQuery.of(context).size.height * 0.2,
-                    right: 20).r,
+                    right: 20)
+                .r,
             child: Form(
               key: _formKey,
               child: Column(
@@ -77,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
   //this function is used for submiting the loginForm
   _submitLoginForm(){
   if (_formKey.currentState!.validate()) {
@@ -88,7 +90,18 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushNamedAndRemoveUntil(
           context, ShoppingList.id, (route) => false);
     }).onError((error, stackTrace) {
-      print("Error ${error.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Account doesn\'t exists',
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 20,
+            ),
+          ),
+          backgroundColor: Colors.white,
+        ),
+      );
     });
   }
 }

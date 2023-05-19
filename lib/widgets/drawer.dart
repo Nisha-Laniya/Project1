@@ -49,6 +49,13 @@ class NavigatorDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.attach_money),
+            title: const Text('WishList'),
+            onTap: () {
+              Navigator.pushNamedAndRemoveUntil(context, ShoppingList.id, (route) => false);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.attach_money),
             title: const Text('Transaction'),
             onTap: () {
               Navigator.pushNamedAndRemoveUntil(context, TransactionScreen.id, (route) => false);
@@ -59,7 +66,7 @@ class NavigatorDrawer extends StatelessWidget {
             title: const Text('Log Out'),
             onTap: () {
               _firebaseAuth.signOut();
-              Navigator.pushNamed(context, LoginScreen.id);
+              Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id, (route) => false);
             },
           ),
 

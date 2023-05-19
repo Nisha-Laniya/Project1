@@ -104,13 +104,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
-  submitSignupForm(){
+
+  submitSignupForm() {
     {
       if (_formKey.currentState!.validate()) {
         FirebaseAuth.instance
             .createUserWithEmailAndPassword(
-            email: _emailTextController.text,
-            password: _passwordTextController.text)
+                email: _emailTextController.text,
+                password: _passwordTextController.text)
             .then((value) {
           print('Account created successfully');
           final auth = FirebaseAuth.instance.currentUser;
@@ -123,6 +124,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               context, ShoppingList.id, (route) => true);
         }).onError((error, stackTrace) {
           print("Error ${error.toString()}");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Account already exists',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 20,
+                ),
+              ),
+              backgroundColor: Colors.white,
+            ),
+          );
         });
       }
     }
